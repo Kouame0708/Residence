@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ma résidence</title>
+    <style>
+     #recherche { width: 100%; max-width: 400px; box-sizing: border-box; padding: 12px; border: 2px solid #d9822b; border-radius: 10px; font-size: 16px; margin-bottom: 16px; }
+
+
+      body { font-family: Arial, sans-serif; background-color: #f5f5f5; margin: 0; padding: 20px; }
+      h2 { color: #d9822b; }
+      .filtres button { width: auto; margin: 0 6px 16px 0; padding: 10px 16px; background-color: white; color: #d9822b; border: 2px solid #d9822b; border-radius: 20px; font-size: 15px; }
+      .carte { background-color: white; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); overflow: hidden; max-width: 400px; margin-bottom: 20px; }
+      .carte img { width: 100%; height: 180px; object-fit: cover; display: block; }
+      .contenu { padding: 16px; }
+      h1 { color: #d9822b; font-size: 22px; margin: 8px 0; }
+      .badge { display: inline-block; background-color: #fdebd8; color: #b5651d; padding: 4px 10px; border-radius: 20px; font-size: 13px; }
+      .prix { font-weight: bold; font-size: 18px; }
+      .contact { background-color: #d9822b; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 16px; width: 100%; margin-top: 12px; }
+    </style>
+  </head>
+  <body>
+    <h2>Résidences disponibles</h2>
+
+    <div class="filtres">
+      <button onclick="filtrer('tous')">Tous</button>
+      <button onclick="filtrer('longue')">Longue durée</button>
+      <button onclick="filtrer('courte')">Courte durée</button>
+    </div>
+
+<input type="text" id="recherche" placeholder="Rechercher une ville..." oninput="appliquer()">
+
+
+ <div class="carte" data-type="longue">
+  <img src="villa1.jpg">
+
+
+      <div class="contenu">
+        <span class="badge">Longue durée</span>
+        <h1>Appartement 2 pièces</h1>
+        <p>Yopougon, Abidjan</p>
+        <p class="prix">100 000 FCFA par mois</p>
+<a href="https://wa.me/2250717096945?text=Bonjour%2C%20je%20suis%20int%C3%A9ress%C3%A9%20par%20l%27Appartement%202%20pi%C3%A8ces%20%C3%A0%20Yopougon"><button class="contact">Contacter le propriétaire</button></a>
+
+        
+
+      </div>
+    </div>
+
+    <div class="carte" data-type="courte">
+      <img src="villa2.jpg">
+
+      <div class="contenu">
+        <span class="badge">Courte durée</span>
+        <h1>Studio meublé</h1>
+        <p>Cocody, Abidjan</p>
+        <p class="prix">25 000 FCFA par nuit</p>
+        <a href="https://wa.me/2250717096945?text=Bonjour%2C%20je%20suis%20int%C3%A9ress%C3%A9%20par%20le%20Studio%20meubl%C3%A9%20%C3%A0%20Cocody"><button class="contact">Contacter le propriétaire</button></a>
+
+      </div>
+    </div>
+
+    <div class="carte" data-type="longue">
+      <img src="villa3.jpg">
+      <div class="contenu">
+        <span class="badge">Longue durée</span>
+        <h1>Villa 4 pièces</h1>
+        <p>Bouaké</p>
+        <p class="prix">180 000 FCFA par mois</p>
+        <a href="https://wa.me/2250717096945?text=Bonjour%2C%20je%20suis%20int%C3%A9ress%C3%A9%20par%20la%20Villa%204%20pi%C3%A8ces%20%C3%A0%20Bouak%C3%A9"><button class="contact">Contacter le propriétaire</button></a>
+
+      </div>
+    </div>
+
+    <div class="carte" data-type="longue">
+      <img src="villa4.jpg">
+      <div class="contenu">
+        <span class="badge">Longue durée</span>
+        <h1>Villa 5 pièces</h1>
+        <p>Yamoussoukro</p>
+        <p class="prix">200 000 FCFA par mois</p>
+        <a href="https://wa.me/2250717096945?text=Bonjour%2C%20je%20suis%20int%C3%A9ress%C3%A9%20par%20la%20Villa%204%20pi%C3%A8ces%20%C3%A0%20Yamoussoukro"><button class="contact">Contacter le propriétaire</button></a>
+
+
+      </div>
+    </div>
+
+<div class="carte" data-type="courte">
+      <img src="villa5.jpg">
+      <div class="contenu">
+        <span class="badge">Courte durée</span>
+        <h1>Chambre Salon 2 pièces</h1>
+        <p>Yamoussoukro</p>
+        <p class="prix">30 000 FCFA par jour</p>
+        <a href="https://wa.me/2250717096945?text=Bonjour%2C%20je%20suis%20int%C3%A9ress%C3%A9%20par%20la%20Chambre%20Salon%202%20pi%C3%A8ces%20%C3%A0%20Yamoussoukro"><button class="contact">Contacter le propriétaire</button></a>
+
+
+      </div>
+    </div>
+
+   <script>
+  var typeActuel = "tous";
+
+  function filtrer(type) {
+    typeActuel = type;
+    appliquer();
+  }
+
+  function appliquer() {
+    var texte = document.getElementById("recherche").value.toLowerCase();
+    document.querySelectorAll(".carte").forEach(function(carte) {
+      var ville = carte.querySelector("p").textContent.toLowerCase();
+      var okType = typeActuel === "tous" || carte.dataset.type === typeActuel;
+      var okVille = ville.includes(texte);
+      carte.style.display = (okType && okVille) ? "block" : "none";
+    });
+  }
+</script>
+
+  </body>
+</html>
+
