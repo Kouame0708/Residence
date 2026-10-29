@@ -95,14 +95,16 @@ function photoId(s){
 }
 
 function render(){
-  var mot=$q.value.trim().toLowerCase(),n=0;
+  var mot=$q.value.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+,n=0;
   $list.innerHTML="";
   annonces.forEach(function(a){
     var type=a.type.toLowerCase();
     // Annonce « Les 2 durées » : visible dans Longue durée ET Courte durée
     var deux=type.indexOf("2 dur")>-1;
 if(filtre==="deux"){if(!deux)return;}else if(filtre&&!deux&&type.indexOf(filtre)!==0)return;
-    if(mot&&(a.ville+" "+a.quartier).toLowerCase().indexOf(mot)<0)return;
+    if(mot&&(a.ville+" "+a.quartier).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+.indexOf(mot)<0)return;
     n++;
     var card=document.createElement("article");card.className="card";
 
