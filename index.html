@@ -1,123 +1,160 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Ma résidence</title>
-    <style>
-     #recherche { width: 100%; max-width: 400px; box-sizing: border-box; padding: 12px; border: 2px solid #d9822b; border-radius: 10px; font-size: 16px; margin-bottom: 16px; }
-
-
-      body { font-family: Arial, sans-serif; background-color: #f5f5f5; margin: 0; padding: 20px; }
-      h2 { color: #d9822b; }
-      .filtres button { width: auto; margin: 0 6px 16px 0; padding: 10px 16px; background-color: white; color: #d9822b; border: 2px solid #d9822b; border-radius: 20px; font-size: 15px; }
-      .carte { background-color: white; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); overflow: hidden; max-width: 400px; margin-bottom: 20px; }
-      .carte img { width: 100%; height: 180px; object-fit: cover; display: block; }
-      .contenu { padding: 16px; }
-      h1 { color: #d9822b; font-size: 22px; margin: 8px 0; }
-      .badge { display: inline-block; background-color: #fdebd8; color: #b5651d; padding: 4px 10px; border-radius: 20px; font-size: 13px; }
-      .prix { font-weight: bold; font-size: 18px; }
-      .contact { background-color: #d9822b; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 16px; width: 100%; margin-top: 12px; }
-    </style>
-  </head>
-  <body>
-    <h2>Résidences disponibles</h2>
-
-    <div class="filtres">
-      <button onclick="filtrer('tous')">Tous</button>
-      <button onclick="filtrer('longue')">Longue durée</button>
-      <button onclick="filtrer('courte')">Courte durée</button>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ma Résidence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Figtree:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f6f4;--card:#fff;--ink:#17261f;--mute:#5d6b64;--line:#dbe4df;--green:#1a6b4c;--green-ink:#fff;--price:#b8431f;--chip:#e4ece8}
+@media (prefers-color-scheme:dark){:root{--bg:#101815;--card:#18231e;--ink:#eaf1ed;--mute:#9db0a6;--line:#2a3a33;--green:#3fa57c;--green-ink:#08150f;--price:#f08a62;--chip:#22322b}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Figtree,system-ui,sans-serif}
+header{padding:28px 18px 8px;max-width:640px;margin:auto}
+h1{font:800 34px/1.05 "Bricolage Grotesque",Figtree,sans-serif;margin:0 0 6px;letter-spacing:-.5px}
+header p{margin:0;color:var(--mute)}
+main{max-width:640px;margin:auto;padding:12px 18px 60px}
+.tools{position:sticky;top:0;background:var(--bg);padding:10px 0;z-index:5}
+input[type=search]{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font:inherit}
+.chips{display:flex;gap:8px;margin-top:10px}
+.chip{flex:1;padding:9px 6px;border:0;border-radius:999px;background:var(--chip);color:var(--ink);font:600 14px Figtree,sans-serif;cursor:pointer}
+.chip[aria-pressed=true]{background:var(--green);color:var(--green-ink)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-top:16px}
+.photo{aspect-ratio:4/3;background:var(--chip);display:flex;align-items:center;justify-content:center;font-size:48px}
+.photo img{width:100%;height:100%;object-fit:cover;display:block}
+.body{padding:14px 16px 16px}
+.top{display:flex;justify-content:space-between;align-items:start;gap:10px}
+.place{font:800 19px/1.2 "Bricolage Grotesque",Figtree,sans-serif;margin:0}
+.type{font-size:13px;font-weight:600;background:var(--chip);padding:3px 10px;border-radius:999px;white-space:nowrap}
+.price{color:var(--price);font-weight:600;margin:6px 0}
+.desc{white-space:pre-wrap;margin:8px 0 0;color:var(--mute);font-size:15px;max-height:4.6em;overflow:hidden}
+.desc.open{max-height:none}
+.more{background:none;border:0;color:var(--green);font:600 14px Figtree,sans-serif;padding:6px 0;cursor:pointer}
+.wa{display:block;text-align:center;margin-top:10px;padding:13px;border-radius:12px;background:var(--green);color:var(--green-ink);font-weight:600;text-decoration:none}
+.wa:focus-visible,.chip:focus-visible,input:focus-visible,.more:focus-visible{outline:3px solid var(--price);outline-offset:2px}
+.msg{text-align:center;color:var(--mute);padding:40px 10px}
+.publish{display:block;text-align:center;margin-top:28px;padding:13px;border:2px solid var(--green);border-radius:12px;color:var(--green);font-weight:600;text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>Ma Résidence</h1>
+  <p>Trouvez un logement en Côte d’Ivoire, en longue ou courte durée.</p>
+</header>
+<main>
+  <div class="tools">
+    <input id="q" type="search" placeholder="Rechercher par ville ou quartier" aria-label="Rechercher par ville ou quartier">
+    <div class="chips" id="chips">
+      <button class="chip" data-f="" aria-pressed="true">Tous</button>
+      <button class="chip" data-f="longue" aria-pressed="false">Longue durée</button>
+      <button class="chip" data-f="courte" aria-pressed="false">Courte durée</button>
     </div>
+  </div>
+  <div id="list"><p class="msg">Chargement des annonces…</p></div>
+  <a id="publish" class="publish" hidden target="_blank" rel="noopener">Publier mon logement</a>
+</main>
+<script>
+// 1. Lien du tableau Google Sheets (publié en CSV)
+var CSV_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vR4RqnA-YppFCl6-MhX3ZdGUgRhu3JVnLtoBG8sQr8LNxp7HoMuU5CrGKcl0t1pERSxbavvtg28d7gy/pub?output=csv";
+// 2. Lien du formulaire Google Forms (à coller entre les guillemets pour afficher le bouton « Publier mon logement »)
+var FORM_URL="";
 
-<input type="text" id="recherche" placeholder="Rechercher une ville..." oninput="appliquer()">
+var annonces=[],filtre="";
+var $list=document.getElementById("list"),$q=document.getElementById("q");
 
-
- <div class="carte" data-type="longue">
-  <img src="villa1.jpg">
-
-
-      <div class="contenu">
-        <span class="badge">Longue durée</span>
-        <h1>Appartement 2 pièces</h1>
-        <p>Yopougon, Abidjan</p>
-        <p class="prix">25 000 FCFA par jour</p>
-<a href="https://wa.me/2250717096945?text=Bonjour%2C%20je%20suis%20int%C3%A9ress%C3%A9%20par%20l%27Appartement%202%20pi%C3%A8ces%20%C3%A0%20Yopougon"><button class="contact">Contacter le propriétaire</button></a>
-
-        
-
-      </div>
-    </div>
-
-    <div class="carte" data-type="courte">
-      <img src="villa2.jpg">
-
-      <div class="contenu">
-        <span class="badge">Courte durée</span>
-        <h1>Studio meublé</h1>
-        <p>Cocody, Abidjan</p>
-        <p class="prix">25 000 FCFA par nuit</p>
-        <a href="https://wa.me/2250717096945?text=Bonjour%2C%20je%20suis%20int%C3%A9ress%C3%A9%20par%20le%20Studio%20meubl%C3%A9%20%C3%A0%20Cocody"><button class="contact">Contacter le propriétaire</button></a>
-
-      </div>
-    </div>
-
-    <div class="carte" data-type="longue">
-      <img src="villa3.jpg">
-      <div class="contenu">
-        <span class="badge">Longue durée</span>
-        <h1>Villa 4 pièces</h1>
-        <p>Bouaké</p>
-        <p class="prix">180 000 FCFA par mois</p>
-        <a href="https://wa.me/2250717096945?text=Bonjour%2C%20je%20suis%20int%C3%A9ress%C3%A9%20par%20la%20Villa%204%20pi%C3%A8ces%20%C3%A0%20Bouak%C3%A9"><button class="contact">Contacter le propriétaire</button></a>
-
-      </div>
-    </div>
-
-    <div class="carte" data-type="longue">
-      <img src="villa4.jpg">
-      <div class="contenu">
-        <span class="badge">Longue durée</span>
-        <h1>Villa 5 pièces</h1>
-        <p>Yamoussoukro</p>
-        <p class="prix">200 000 FCFA par mois</p>
-        <a href="https://wa.me/2250717096945?text=Bonjour%2C%20je%20suis%20int%C3%A9ress%C3%A9%20par%20la%20Villa%204%20pi%C3%A8ces%20%C3%A0%20Yamoussoukro"><button class="contact">Contacter le propriétaire</button></a>
-
-
-      </div>
-    </div>
-
-<div class="carte" data-type="courte">
-      <img src="villa5.jpg">
-      <div class="contenu">
-        <span class="badge">Courte durée</span>
-        <h1>Chambre Salon 2 pièces</h1>
-        <p>Yamoussoukro</p>
-        <p class="prix">30 000 FCFA par jour</p>
-        <a href="https://wa.me/2250717096945?text=Bonjour%2C%20je%20suis%20int%C3%A9ress%C3%A9%20par%20la%20Chambre%20Salon%202%20pi%C3%A8ces%20%C3%A0%20Yamoussoukro"><button class="contact">Contacter le propriétaire</button></a>
-
-
-      </div>
-    </div>
-
-   <script>
-  var typeActuel = "tous";
-
-  function filtrer(type) {
-    typeActuel = type;
-    appliquer();
+function parseCSV(t){
+  var rows=[],row=[],cell="",q=false,i,c;
+  for(i=0;i<t.length;i++){
+    c=t[i];
+    if(q){
+      if(c==='"'){ if(t[i+1]==='"'){cell+='"';i++;} else q=false; }
+      else cell+=c;
+    }else if(c==='"')q=true;
+    else if(c===","){row.push(cell);cell="";}
+    else if(c==="\n"||c==="\r"){
+      if(c==="\r"&&t[i+1]==="\n")i++;
+      row.push(cell);cell="";rows.push(row);row=[];
+    }else cell+=c;
   }
+  if(cell!==""||row.length){row.push(cell);rows.push(row);}
+  return rows;
+}
 
-  function appliquer() {
-    var texte = document.getElementById("recherche").value.toLowerCase();
-    document.querySelectorAll(".carte").forEach(function(carte) {
-      var ville = carte.querySelector("p").textContent.toLowerCase();
-      var okType = typeActuel === "tous" || carte.dataset.type === typeActuel;
-      var okVille = ville.includes(texte);
-      carte.style.display = (okType && okVille) ? "block" : "none";
-    });
-  }
+function phone(s){
+  var d=(s||"").replace(/\D/g,"");
+  if(d.length===10&&d[0]==="0")d="225"+d;
+  return d;
+}
+function photoId(s){
+  var m=(s||"").match(/[-\w]{25,}/);
+  return m?m[0]:"";
+}
+
+function render(){
+  var mot=$q.value.trim().toLowerCase(),n=0;
+  $list.innerHTML="";
+  annonces.forEach(function(a){
+    var type=a.type.toLowerCase();
+    if(filtre&&type.indexOf(filtre)!==0)return;
+    if(mot&&(a.ville+" "+a.quartier).toLowerCase().indexOf(mot)<0)return;
+    n++;
+    var card=document.createElement("article");card.className="card";
+
+    var ph=document.createElement("div");ph.className="photo";
+    var id=photoId(a.photo);
+    if(id){
+      var img=new Image();img.alt="Photo du logement à "+a.quartier;img.loading="lazy";
+      img.src="https://drive.google.com/thumbnail?id="+id+"&sz=w800";
+      img.onerror=function(){ph.textContent="🏠";};
+      ph.appendChild(img);
+    }else ph.textContent="🏠";
+    card.appendChild(ph);
+
+    var b=document.createElement("div");b.className="body";
+    var top=document.createElement("div");top.className="top";
+    var h=document.createElement("h2");h.className="place";h.textContent=a.quartier+", "+a.ville;
+    var t=document.createElement("span");t.className="type";t.textContent=a.type;
+    top.appendChild(h);top.appendChild(t);b.appendChild(top);
+
+    var p=document.createElement("div");p.className="price";p.textContent=a.prix;b.appendChild(p);
+
+    var d=document.createElement("p");d.className="desc";d.textContent=a.desc;b.appendChild(d);
+    var m=document.createElement("button");m.className="more";m.textContent="Voir plus";
+    m.onclick=function(){var o=d.classList.toggle("open");m.textContent=o?"Voir moins":"Voir plus";};
+    b.appendChild(m);
+
+    var num=phone(a.tel);
+    if(num){
+      var w=document.createElement("a");w.className="wa";
+      w.href="https://wa.me/"+num+"?text="+encodeURIComponent("Bonjour, je suis intéressé(e) par votre logement à "+a.quartier+" (Ma Résidence).");
+      w.target="_blank";w.rel="noopener";w.textContent="Contacter le propriétaire";
+      b.appendChild(w);
+    }
+    card.appendChild(b);$list.appendChild(card);
+  });
+  if(!n)$list.innerHTML='<p class="msg">Aucune annonce trouvée. Essayez une autre ville ou un autre filtre.</p>';
+}
+
+document.getElementById("chips").addEventListener("click",function(e){
+  var b=e.target.closest(".chip");if(!b)return;
+  filtre=b.dataset.f;
+  document.querySelectorAll(".chip").forEach(function(c){c.setAttribute("aria-pressed",c===b);});
+  render();
+});
+$q.addEventListener("input",render);
+
+if(FORM_URL){var pb=document.getElementById("publish");pb.href=FORM_URL;pb.hidden=false;}
+
+fetch(CSV_URL).then(function(r){return r.text();}).then(function(txt){
+  var rows=parseCSV(txt);rows.shift();
+  annonces=rows.filter(function(r){return r.length>=8&&r[1];}).map(function(r){
+    return{ville:r[1].trim(),quartier:r[2].trim(),prix:r[3].trim(),tel:r[4],desc:r[5].trim(),photo:r[6],type:(r[7]||"").trim()};
+  }).reverse();
+  render();
+}).catch(function(){
+  $list.innerHTML='<p class="msg">Impossible de charger les annonces. Vérifiez votre connexion et réessayez.</p>';
+});
 </script>
-
-  </body>
+</body>
 </html>
-
