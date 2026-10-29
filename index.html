@@ -21,8 +21,11 @@ input[type=search]{width:100%;padding:12px 14px;border:1.5px solid var(--line);b
 .chip{flex:1 1 auto;padding:9px 12px;border:0;border-radius:999px;background:var(--chip);color:var(--ink);font:600 14px Figtree,sans-serif;cursor:pointer}
 .chip[aria-pressed=true]{background:var(--green);color:var(--green-ink)}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-top:16px}
-.photo{aspect-ratio:4/3;background:var(--chip);display:flex;align-items:center;justify-content:center;font-size:48px}
-.photo img{width:100%;height:100%;object-fit:cover;display:block}
+.photo{position:relative;aspect-ratio:4/3;background:var(--chip);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:48px}
+.slides{display:flex;width:100%;height:100%;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.slides::-webkit-scrollbar{display:none}
+.slides img{flex:0 0 100%;width:100%;height:100%;object-fit:cover;display:block;scroll-snap-align:center}
+.count{position:absolute;right:10px;bottom:10px;background:rgba(0,0,0,.6);color:#fff;font:600 13px Figtree,sans-serif;padding:3px 10px;border-radius:999px;pointer-events:none}
 .body{padding:14px 16px 16px}
 .top{display:flex;justify-content:space-between;align-items:start;gap:10px}
 .place{font:800 19px/1.2 "Bricolage Grotesque",Figtree,sans-serif;margin:0}
@@ -93,6 +96,10 @@ function photoId(s){
   var m=(s||"").match(/[-\w]{25,}/);
   return m?m[0]:"";
 }
+// Plusieurs photos : les liens sont séparés par des virgules
+function photoIds(s){
+  return (s||"").split(",").map(photoId).filter(function(x){return x;});
+}
 
 function render(){
   var mot=$q.value.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")
@@ -109,12 +116,27 @@ if(filtre==="deux"){if(!deux)return;}else if(filtre&&!deux&&type.indexOf(filtre)
     var card=document.createElement("article");card.className="card";
 
     var ph=document.createElement("div");ph.className="photo";
-    var id=photoId(a.photo);
-    if(id){
-      var img=new Image();img.alt="Photo du logement à "+a.quartier;img.loading="lazy";
-      img.src="https://drive.google.com/thumbnail?id="+id+"&sz=w800";
-      img.onerror=function(){ph.textContent="🏠";};
-      ph.appendChild(img);
+    var ids=photoIds(a.photo);
+    if(ids.length){
+      var sl=document.createElement("div");sl.className="slides";
+      ids.forEach(function(id,i){
+        var img=new Image();
+        img.alt="Photo "+(i+1)+" du logement à "+a.quartier;
+        img.loading="lazy";
+        img.src="https://drive.google.com/thumbnail?id="+id+"&sz=w800";
+        img.onerror=function(){img.style.visibility="hidden";};
+        sl.appendChild(img);
+      });
+      ph.appendChild(sl);
+      if(ids.length>1){
+        var cnt=document.createElement("span");cnt.className="count";
+        cnt.textContent="1 / "+ids.length;
+        sl.addEventListener("scroll",function(){
+          var k=Math.round(sl.scrollLeft/sl.clientWidth)+1;
+          cnt.textContent=k+" / "+ids.length;
+        });
+        ph.appendChild(cnt);
+      }
     }else ph.textContent="🏠";
     card.appendChild(ph);
 
