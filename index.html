@@ -152,7 +152,8 @@ if(FORM_URL){var pb=document.getElementById("publish");pb.href=FORM_URL;pb.hidde
 
 fetch(CSV_URL).then(function(r){return r.text();}).then(function(txt){
   var rows=parseCSV(txt);rows.shift();
-  annonces=rows.filter(function(r){return r.length>=8&&r[1];}).map(function(r){
+  annonces=rows.filter(function(r){return r.length>=8&&r[1]&&(r[8]||"").trim().toLowerCase()==="oui"
+;}).map(function(r){
     return{ville:r[1].trim(),quartier:r[2].trim(),prix:r[3].trim(),tel:r[4],desc:r[5].trim(),photo:r[6],type:(r[7]||"").trim()};
   }).reverse();
   render();
