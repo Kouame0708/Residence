@@ -34,6 +34,7 @@ input[type=search]{width:100%;padding:12px 14px;border:1.5px solid var(--line);b
 .wa{display:block;text-align:center;margin-top:10px;padding:13px;border-radius:12px;background:var(--green);color:var(--green-ink);font-weight:600;text-decoration:none}
 .wa:focus-visible,.chip:focus-visible,input:focus-visible,.more:focus-visible{outline:3px solid var(--price);outline-offset:2px}
 .msg{text-align:center;color:var(--mute);padding:40px 10px}
+.publish[hidden]{display:none}
 .publish{display:block;text-align:center;margin-top:28px;padding:13px;border:2px solid var(--green);border-radius:12px;color:var(--green);font-weight:600;text-decoration:none}
 </style>
 </head>
@@ -58,7 +59,7 @@ input[type=search]{width:100%;padding:12px 14px;border:1.5px solid var(--line);b
 // 1. Lien du tableau Google Sheets (publié en CSV)
 var CSV_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vR4RqnA-YppFCl6-MhX3ZdGUgRhu3JVnLtoBG8sQr8LNxp7HoMuU5CrGKcl0t1pERSxbavvtg28d7gy/pub?output=csv";
 // 2. Lien du formulaire Google Forms (à coller entre les guillemets pour afficher le bouton « Publier mon logement »)
-var FORM_URL="";
+var FORM_URL="https://docs.google.com/forms/d/e/1FAIpQLSdz7zznr29TLAb2TVSRMYgJQzfJIOJcLJ3Af4S7KFvZO9QxkQ/viewform";
 
 var annonces=[],filtre="";
 var $list=document.getElementById("list"),$q=document.getElementById("q");
