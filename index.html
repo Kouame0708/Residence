@@ -97,7 +97,9 @@ function render(){
   $list.innerHTML="";
   annonces.forEach(function(a){
     var type=a.type.toLowerCase();
-    if(filtre&&type.indexOf(filtre)!==0)return;
+    // Annonce « Les 2 durées » : visible dans Longue durée ET Courte durée
+    var deux=type.indexOf("2 dur")>-1;
+    if(filtre&&!deux&&type.indexOf(filtre)!==0)return;
     if(mot&&(a.ville+" "+a.quartier).toLowerCase().indexOf(mot)<0)return;
     n++;
     var card=document.createElement("article");card.className="card";
@@ -115,7 +117,7 @@ function render(){
     var b=document.createElement("div");b.className="body";
     var top=document.createElement("div");top.className="top";
     var h=document.createElement("h2");h.className="place";h.textContent=a.quartier+", "+a.ville;
-    var t=document.createElement("span");t.className="type";t.textContent=a.type;
+    var t=document.createElement("span");t.className="type";t.textContent=deux?"Courte & longue durée":a.type;
     top.appendChild(h);top.appendChild(t);b.appendChild(top);
 
     var p=document.createElement("div");p.className="price";p.textContent=a.prix;b.appendChild(p);
