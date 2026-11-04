@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Ma Résidence</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Figtree:wght@400;600&display=swap" rel="stylesheet">
@@ -14,7 +14,10 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Figtree,system
 header{padding:28px 18px 8px;max-width:640px;margin:auto}
 h1{font:800 34px/1.05 "Bricolage Grotesque",Figtree,sans-serif;margin:0 0 6px;letter-spacing:-.5px}
 header p{margin:0;color:var(--mute)}
-main{max-width:640px;margin:auto;padding:12px 18px 60px}
+main{max-width:640px;margin:auto;padding:12px 18px calc(96px + env(safe-area-inset-bottom,0px))}
+.page[hidden]{display:none}
+h2.title{font:800 24px/1.15 "Bricolage Grotesque",Figtree,sans-serif;margin:16px 0 8px}
+.page p{margin:8px 0}
 .tools{position:sticky;top:0;background:var(--bg);padding:10px 0;z-index:5}
 input[type=search]{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font:inherit}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
@@ -35,10 +38,19 @@ input[type=search]{width:100%;padding:12px 14px;border:1.5px solid var(--line);b
 .desc.open{max-height:none}
 .more{background:none;border:0;color:var(--green);font:600 14px Figtree,sans-serif;padding:6px 0;cursor:pointer}
 .wa{display:block;text-align:center;margin-top:10px;padding:13px;border-radius:12px;background:var(--green);color:var(--green-ink);font-weight:600;text-decoration:none}
-.wa:focus-visible,.chip:focus-visible,input:focus-visible,.more:focus-visible{outline:3px solid var(--price);outline-offset:2px}
 .msg{text-align:center;color:var(--mute);padding:40px 10px}
 .publish[hidden]{display:none}
-.publish{display:block;text-align:center;margin-top:28px;padding:13px;border:2px solid var(--green);border-radius:12px;color:var(--green);font-weight:600;text-decoration:none}
+.publish{display:block;text-align:center;margin-top:20px;padding:13px;border:2px solid var(--green);border-radius:12px;color:var(--green);font-weight:600;text-decoration:none}
+.steps{margin:12px 0;padding-left:22px}
+.steps li{margin:8px 0}
+.note{background:var(--chip);color:var(--ink);padding:10px 12px;border-radius:12px;font-size:14px;margin:12px 0 0}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+nav .in{display:flex;max-width:640px;margin:auto}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 4px 8px;border:0;background:none;color:var(--mute);font:600 12px Figtree,sans-serif;cursor:pointer}
+.tab span{font-size:22px;line-height:1}
+.tab[aria-current=page]{color:var(--green)}
+.tab[aria-current=page] span{transform:scale(1.12)}
+.wa:focus-visible,.chip:focus-visible,input:focus-visible,.more:focus-visible,.tab:focus-visible,.publish:focus-visible{outline:3px solid var(--price);outline-offset:2px}
 </style>
 </head>
 <body>
@@ -47,24 +59,64 @@ input[type=search]{width:100%;padding:12px 14px;border:1.5px solid var(--line);b
   <p>Trouvez un logement en Côte d’Ivoire, en longue ou courte durée.</p>
 </header>
 <main>
-  <div class="tools">
-    <input id="q" type="search" placeholder="Rechercher par ville ou quartier" aria-label="Rechercher par ville ou quartier">
-    <div class="chips" id="chips">
-      <button class="chip" data-f="" aria-pressed="true">Tous</button>
-      <button class="chip" data-f="longue" aria-pressed="false">Longue durée</button>
-      <button class="chip" data-f="courte" aria-pressed="false">Courte durée</button>
-      <button class="chip" data-f="deux" aria-pressed="false">Les 2 durées</button>
+
+  <section class="page" id="p-annonces">
+    <div class="tools">
+      <input id="q" type="search" placeholder="Rechercher par ville ou quartier" aria-label="Rechercher par ville ou quartier">
+      <div class="chips" id="chips">
+        <button class="chip" data-f="" aria-pressed="true">Tous</button>
+        <button class="chip" data-f="longue" aria-pressed="false">Longue durée</button>
+        <button class="chip" data-f="courte" aria-pressed="false">Courte durée</button>
+        <button class="chip" data-f="deux" aria-pressed="false">Les 2 durées</button>
+      </div>
     </div>
-  </div>
-  <p style="background:var(--chip);color:var(--ink);padding:10px 12px;border-radius:12px;font-size:14px;margin:12px 0 0">⚠️ <b>Conseil :</b> ne payez jamais avant d'avoir visité le logement et rencontré le propriétaire.</p>
-<div id="list"><p class="msg">Chargement des annonces…</p></div>
-  <a id="publish" class="publish" hidden target="_blank" rel="noopener">Publier mon logement</a>
+    <p class="note">⚠️ <b>Conseil :</b> ne payez jamais avant d'avoir visité le logement et rencontré le propriétaire.</p>
+    <div id="list"><p class="msg">Chargement des annonces…</p></div>
+  </section>
+
+  <section class="page" id="p-publier" hidden>
+    <h2 class="title">Publier mon logement</h2>
+    <p>Vous êtes propriétaire ? Ajoutez votre logement gratuitement, il apparaîtra dans les annonces.</p>
+    <ol class="steps">
+      <li>Remplissez le formulaire avec la ville, le quartier, le prix et une description.</li>
+      <li>Ajoutez une photo et votre numéro WhatsApp.</li>
+      <li>Votre annonce est publiée après vérification.</li>
+    </ol>
+    <a id="publish" class="publish" hidden target="_blank" rel="noopener">Ouvrir le formulaire</a>
+  </section>
+
+  <section class="page" id="p-apropos" hidden>
+    <h2 class="title">À propos</h2>
+    <p>Ma Résidence aide chacun à trouver un logement en Côte d’Ivoire, en longue ou en courte durée.</p>
+    <p>Les propriétaires publient leurs annonces et les visiteurs les contactent directement sur WhatsApp.</p>
+    <p class="note">⚠️ Ne payez jamais avant d'avoir visité le logement et rencontré le propriétaire.</p>
+  </section>
+
+  <section class="page" id="p-contact" hidden>
+    <h2 class="title">Contact</h2>
+    <p>Une question, un problème avec une annonce ? Écrivez-nous directement.</p>
+    <a id="contact-wa" class="wa" hidden target="_blank" rel="noopener">Écrire sur WhatsApp</a>
+    <p id="contact-none" class="msg" hidden>Le contact sera bientôt disponible.</p>
+  </section>
+
 </main>
+
+<nav aria-label="Menu principal">
+  <div class="in">
+    <button class="tab" data-p="annonces" aria-current="page"><span aria-hidden="true">🏠</span>Annonces</button>
+    <button class="tab" data-p="publier"><span aria-hidden="true">📝</span>Publier</button>
+    <button class="tab" data-p="apropos"><span aria-hidden="true">ℹ️</span>À propos</button>
+    <button class="tab" data-p="contact"><span aria-hidden="true">📞</span>Contact</button>
+  </div>
+</nav>
+
 <script>
 // 1. Lien du tableau Google Sheets (publié en CSV)
 var CSV_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vR4RqnA-YppFCl6-MhX3ZdGUgRhu3JVnLtoBG8sQr8LNxp7HoMuU5CrGKcl0t1pERSxbavvtg28d7gy/pub?output=csv";
-// 2. Lien du formulaire Google Forms (à coller entre les guillemets pour afficher le bouton « Publier mon logement »)
+// 2. Lien du formulaire Google Forms
 var FORM_URL="https://docs.google.com/forms/d/1fqYhAG0dVXl36qtgKoze7mFZumZbztDGyY1tpTbZKyk/viewform";
+// 3. Ton numéro WhatsApp pour la page Contact (ex. "0717096945"), à mettre entre les guillemets
+var CONTACT_TEL="";
 
 var annonces=[],filtre="";
 var $list=document.getElementById("list"),$q=document.getElementById("q");
@@ -173,7 +225,26 @@ document.getElementById("chips").addEventListener("click",function(e){
 });
 $q.addEventListener("input",render);
 
+// Menu du bas
+function go(name){
+  document.querySelectorAll(".page").forEach(function(s){s.hidden=s.id!=="p-"+name;});
+  document.querySelectorAll(".tab").forEach(function(t){
+    if(t.dataset.p===name)t.setAttribute("aria-current","page");else t.removeAttribute("aria-current");
+  });
+  window.scrollTo(0,0);
+}
+document.querySelector("nav").addEventListener("click",function(e){
+  var t=e.target.closest(".tab");if(t)go(t.dataset.p);
+});
+
 if(FORM_URL){var pb=document.getElementById("publish");pb.href=FORM_URL;pb.hidden=false;}
+
+var cnum=phone(CONTACT_TEL);
+if(cnum){
+  var cw=document.getElementById("contact-wa");
+  cw.href="https://wa.me/"+cnum+"?text="+encodeURIComponent("Bonjour, j'ai une question sur Ma Résidence.");
+  cw.hidden=false;
+}else document.getElementById("contact-none").hidden=false;
 
 fetch(CSV_URL).then(function(r){return r.text();}).then(function(txt){
   var rows=parseCSV(txt);rows.shift();
