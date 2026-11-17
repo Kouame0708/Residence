@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Valider une annonce – Ma Résidence</title>
+<style>
+:root{--bg:#f2f6f3;--card:#fff;--ink:#17261f;--mute:#5d6b64;--line:#cdd8d1;--green:#0b6b45;--orange:#e8731a;--red:#b3261e;--ok:#e3f3ea;--ko:#fbe4e2;--mid:#fff1de}
+@media (prefers-color-scheme:dark){:root{--bg:#101815;--card:#18231e;--ink:#eaf1ed;--mute:#9db0a6;--line:#2a3a33;--green:#3fa57c;--red:#f28b82;--ok:#173326;--ko:#3a1d1b;--mid:#3a2a14}}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+main{max-width:600px;margin:auto;padding:20px}
+h1{font-size:24px;margin:0 0 6px}
+.mute{color:var(--mute);margin:0 0 16px}
+label{display:block;font-weight:600;margin:16px 0 6px}
+textarea,input[type=file]{width:100%;padding:12px;font:inherit;border:1.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink)}
+textarea{min-height:170px}
+button{font:inherit;font-weight:700;border:0;border-radius:12px;padding:14px;cursor:pointer}
+#go{width:100%;margin-top:18px;background:var(--orange);color:#fff;font-size:17px}
+#go:disabled{opacity:.6}
+.sm{background:var(--green);color:#fff;padding:10px 14px;margin-top:8px}
+button:focus-visible,textarea:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+#info{font-size:14px;color:var(--mute);margin-top:6px}
+#res{margin-top:22px}
+.box{border-radius:14px;padding:14px 16px;margin-top:12px;background:var(--card);border:1px solid var(--line)}
+.v-ok{background:var(--ok)}.v-ko{background:var(--ko)}.v-mid{background:var(--mid)}
+.box h2{font-size:18px;margin:0 0 6px}
+ul{margin:6px 0;padding-left:20px}
+pre{white-space:pre-wrap;font:inherit;margin:6px 0 0}
+.err{color:var(--red)}
+</style>
+</head>
+<body>
+<main>
+  <h1>Valider une annonce</h1>
+  <p class="mute">Collez le message reçu sur WhatsApp et ajoutez les photos. Claude vérifie l’annonce et vous dit s’il faut l’approuver.</p>
+
+  <div id="app">
+    <label for="txt">Message du propriétaire</label>
+    <textarea id="txt" placeholder="Collez ici : type, ville, quartier, prix, numéro, description…"></textarea>
+
+    <div id="zonePhotos">
+      <label for="ph">Photos (15 maximum)</label>
+      <input id="ph" type="file" accept="image/*" multiple>
+      <div id="info"></div>
+    </div>
+
+    <button id="go" type="button">Vérifier avec Claude</button>
+    <div id="res" aria-live="polite"></div>
+  </div>
+  <p id="absent" class="err" hidden>Ouvrez cette page depuis claude.ai pour utiliser Claude.</p>
+</main>
+
+<script>
+(function(){
+  var MAX=15,sample=null;
+  var $=function(id){return document.getElementById(id);};
+  var go=$("go"),res=$("res"),ph=$("ph"),info=$("info");
+
+  ph.addEventListener("change",function(){
+    if(ph.files.length>MAX){info.textContent="Seules les "+MAX+" premières photos seront envoyées ("+ph.files.length+" choisies).";}
+    else info.textContent=ph.files.length?ph.files.length+" photo(s) choisie(s).":"";
+  });
+
+  // Réduit chaque photo pour qu'elle reste légère
+  function shrink(file){
+    return new Promise(function(ok,ko){
+      var img=new Image(),url=URL.createObjectURL(file);
+      img.onload=function(){
+        var s=Math.min(1,1000/Math.max(img.width,img.height));
+        var c=document.createElement("canvas");
+        c.width=Math.round(img.width*s);c.height=Math.round(img.height*s);
+        c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+        URL.revokeObjectURL(url);
+        c.toBlob(function(b){b?ok(b):ko(new Error("photo"));},"image/jpeg",0.8);
+      };
+      img.onerror=function(){URL.revokeObjectURL(url);ko(new Error("photo"));};
+      img.src=url;
+    });
+  }
+
+  var CONSIGNE=
+"Tu aides le modérateur de « Ma Résidence », un site d’annonces de logements en Côte d’Ivoire (démarrage à Abidjan). " +
+"Voici le message d’un propriétaire qui veut publier une annonce, avec ses photos éventuelles.\n\n" +
+"Vérifie :\n" +
+"- les informations obligatoires : type de location (longue durée, courte durée ou les deux), ville, quartier, prix en FCFA, numéro WhatsApp, description ;\n" +
+"- la cohérence du prix pour ce quartier et ce type de logement ;\n" +
+"- les signes d’arnaque : demande d’argent avant la visite, prix trop beau pour être vrai, urgence, description floue ou copiée, incohérences ;\n" +
+"- les photos : elles doivent montrer un vrai logement, correspondre à la description, sans filigrane d’un autre site ni personne identifiable.\n\n" +
+"Réponds UNIQUEMENT avec un objet JSON, sans texte autour ni balises, de cette forme :\n" +
+"{\"verdict\":\"approuver\"|\"verifier\"|\"refuser\",\"resume\":\"une phrase\",\"points\":[\"point positif ou problème\"],\"manque\":[\"information manquante\"],\"reponse_whatsapp\":\"message court et poli à envoyer au propriétaire, en français\",\"annonce_propre\":\"description reformulée en 2 à 4 phrases claires, sans inventer d’information\"}\n" +
+"« approuver » = prête à publier. « verifier » = il faut appeler le propriétaire ou obtenir des précisions. « refuser » = suspecte ou inacceptable. Ne jamais inventer d’information absente du message.\n\n" +
+"MESSAGE DU PROPRIÉTAIRE :\n";
+
+  function li(arr){
+    var ul=document.createElement("ul");
+    (arr||[]).forEach(function(x){var l=document.createElement("li");l.textContent=String(x);ul.appendChild(l);});
+    return ul;
+  }
+  function box(cls,titre){
+    var b=document.createElement("div");b.className="box "+(cls||"");
+    if(titre){var h=document.createElement("h2");h.textContent=titre;b.appendChild(h);}
+    res.appendChild(b);return b;
+  }
+  function copier(texte,btn){
+    var fin=function(){btn.textContent="Copié ✓";setTimeout(function(){btn.textContent="Copier";},2000);};
+    try{navigator.clipboard.writeText(texte).then(fin,function(){});}catch(e){}
+  }
+
+  function afficher(r){
+    res.textContent="";
+    var v=r.verdict;
+    var b=box(v==="approuver"?"v-ok":v==="refuser"?"v-ko":"v-mid",
+      v==="approuver"?"✅ À approuver":v==="refuser"?"⛔ À refuser":"🔎 À vérifier");
+    var p=document.createElement("p");p.textContent=r.resume||"";b.appendChild(p);
+    if(v==="approuver"){
+      var n=document.createElement("p");n.textContent="Ensuite, écrivez « oui » dans la colonne Approuvé du tableau.";b.appendChild(n);
+    }
+    if(r.points&&r.points.length){var b2=box("","Points relevés");b2.appendChild(li(r.points));}
+    if(r.manque&&r.manque.length){var b3=box("","Informations manquantes");b3.appendChild(li(r.manque));}
+    if(r.reponse_whatsapp){
+      var b4=box("","Réponse à envoyer au propriétaire");
+      var pre=document.createElement("pre");pre.textContent=r.reponse_whatsapp;b4.appendChild(pre);
+      var c=document.createElement("button");c.type="button";c.className="sm";c.textContent="Copier";
+      c.onclick=function(){copier(r.reponse_whatsapp,c);};b4.appendChild(c);
+    }
+    if(r.annonce_propre){
+      var b5=box("","Description proposée");
+      var pr=document.createElement("pre");pr.textContent=r.annonce_propre;b5.appendChild(pr);
+      var c2=document.createElement("button");c2.type="button";c2.className="sm";c2.textContent="Copier";
+      c2.onclick=function(){copier(r.annonce_propre,c2);};b5.appendChild(c2);
+    }
+  }
+
+  function erreur(e){
+    res.textContent="";
+    var m="Une erreur est survenue. Réessayez dans un instant.";
+    if(e&&e.code==="not_granted")m="Vous avez refusé l’accès à Claude. Rechargez la page pour réessayer.";
+    else if(e&&e.code==="rate_limited")m="Trop de demandes. Attendez une minute puis réessayez.";
+    else if(e&&e.code==="images_unavailable")m="L’envoi de photos n’est pas disponible ici. Vérifiez sans les photos.";
+    var p=document.createElement("p");p.className="err";p.textContent=m;res.appendChild(p);
+  }
+
+  go.addEventListener("click",async function(){
+    var texte=$("txt").value.trim();
+    if(texte.length<20){res.textContent="";var p=document.createElement("p");p.className="err";p.textContent="Collez d’abord le message du propriétaire.";res.appendChild(p);return;}
+    go.disabled=true;res.textContent="Claude analyse l’annonce…";
+    try{
+      var opts={modelTier:"default"};
+      var files=Array.prototype.slice.call(ph.files,0,MAX);
+      if(files.length&&sample.limits){
+        var lim=await sample.limits();
+        if(lim&&lim.images)opts.images=await Promise.all(files.map(shrink));
+      }
+      var r=await sample.json(CONSIGNE+texte,opts);
+      afficher(r);
+    }catch(e){erreur(e);}
+    finally{go.disabled=false;}
+  });
+
+  // Claude n'est disponible que dans claude.ai
+  var attente=setTimeout(function(){},0);
+  (async function(){
+    try{sample=window.claude?await claude.use("sample"):null;}catch(e){sample=null;}
+    clearTimeout(attente);
+    if(!sample){$("app").hidden=true;$("absent").hidden=false;return;}
+    try{
+      var lim=sample.limits?await sample.limits():null;
+      if(!lim||!lim.images)$("zonePhotos").hidden=true;
+    }catch(e){$("zonePhotos").hidden=true;}
+  })();
+})();
+</script>
+</body>
+</html>
