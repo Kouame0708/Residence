@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Publier mon logement – Ma Résidence</title>
+<style>
+  :root {
+    --vert: #0b6b45;
+    --vert-fonce: #084d32;
+    --orange: #e8731a;
+    --fond: #f2f6f3;
+    --texte: #1b2a22;
+    --gris: #5d6b63;
+    --bord: #cdd8d1;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--fond);
+    color: var(--texte);
+    line-height: 1.5;
+  }
+  header {
+    background: var(--vert);
+    color: #fff;
+    padding: 18px 20px;
+  }
+  header a { color: #fff; font-size: 15px; text-decoration: none; opacity: .9; }
+  header h1 { margin: 6px 0 0; font-size: 22px; }
+  main { max-width: 560px; margin: 0 auto; padding: 20px; }
+  .intro { margin: 0 0 18px; color: var(--gris); }
+  label { display: block; font-weight: 600; margin: 16px 0 6px; }
+  input, select, textarea {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: 1.5px solid var(--bord);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--texte);
+    font-family: inherit;
+  }
+  input:focus, select:focus, textarea:focus, button:focus-visible {
+    outline: 3px solid #f4b27a;
+    border-color: var(--orange);
+  }
+  textarea { min-height: 110px; resize: vertical; }
+  .aide { font-size: 14px; color: var(--gris); margin: 4px 0 0; }
+  .photos {
+    margin-top: 20px;
+    padding: 14px;
+    background: #fff4e8;
+    border-left: 4px solid var(--orange);
+    border-radius: 8px;
+    font-size: 15px;
+  }
+  button {
+    width: 100%;
+    margin-top: 22px;
+    padding: 15px;
+    font-size: 17px;
+    font-weight: 700;
+    color: #fff;
+    background: var(--orange);
+    border: 0;
+    border-radius: 12px;
+    cursor: pointer;
+  }
+  button:active { background: #c95f10; }
+  .erreur { color: #b3261e; font-size: 14px; margin-top: 8px; min-height: 18px; }
+  #merci { display: none; text-align: center; padding: 30px 10px; }
+  #merci h2 { color: var(--vert-fonce); }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="index.html">‹ Retour aux annonces</a>
+  <h1>Publier mon logement</h1>
+</header>
+
+<main>
+  <form id="formulaire" novalidate>
+    <p class="intro">Remplissez les informations, puis envoyez-les sur WhatsApp. Aucun compte à créer.</p>
+
+    <label for="type">Type de location</label>
+    <select id="type">
+      <option>Longue durée</option>
+      <option>Courte durée</option>
+      <option>Les 2 durées (courte et longue durée)</option>
+    </select>
+
+    <label for="ville">Ville</label>
+    <input id="ville" type="text" value="Abidjan" autocomplete="off">
+
+    <label for="quartier">Quartier</label>
+    <input id="quartier" type="text" placeholder="Ex. Yopougon, Cocody, Marcory" autocomplete="off">
+
+    <label for="prix">Prix (en FCFA)</label>
+    <input id="prix" type="text" inputmode="numeric" placeholder="Ex. 150 000 par mois" autocomplete="off">
+
+    <label for="tel">Votre numéro WhatsApp</label>
+    <input id="tel" type="tel" inputmode="tel" placeholder="Ex. 07 00 00 00 00" autocomplete="off">
+
+    <label for="desc">Description du logement</label>
+    <textarea id="desc" placeholder="Nombre de pièces, eau, électricité, clôture, étage…"></textarea>
+
+    <div class="photos">
+      <strong>Et les photos ?</strong><br>
+      Après avoir appuyé sur le bouton, WhatsApp s’ouvre avec votre message. Envoyez-le, puis envoyez vos photos (jusqu’à 6) dans la même conversation.
+    </div>
+
+    <div class="erreur" id="erreur" role="alert"></div>
+    <button type="submit">Envoyer sur WhatsApp</button>
+  </form>
+
+  <section id="merci">
+    <h2>Dernière étape</h2>
+    <p>Si WhatsApp ne s’est pas ouvert, appuyez sur le bouton ci-dessous. N’oubliez pas d’envoyer vos photos dans la conversation.</p>
+    <p><a id="lienWa" href="#">Ouvrir WhatsApp</a></p>
+    <p><a href="index.html">Retour aux annonces</a></p>
+  </section>
+</main>
+
+<script>
+  // Numéro WhatsApp qui reçoit les annonces, avec l'indicatif 225 et sans espace ni "+"
+  var NUMERO = "2250717096945";
+
+  var form = document.getElementById("formulaire");
+  var erreur = document.getElementById("erreur");
+
+  function val(id) {
+    return document.getElementById(id).value.trim();
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    erreur.textContent = "";
+
+    var type = val("type"), ville = val("ville"), quartier = val("quartier"),
+        prix = val("prix"), tel = val("tel"), desc = val("desc");
+
+    if (!ville || !quartier || !prix || !desc) {
+      erreur.textContent = "Il manque une information. Remplissez tous les champs.";
+      return;
+    }
+    if (tel.replace(/\D/g, "").length < 8) {
+      erreur.textContent = "Numéro WhatsApp invalide. Vérifiez-le.";
+      return;
+    }
+
+    var message =
+      "Bonjour, je veux publier mon logement sur Ma Résidence.\n\n" +
+      "Type : " + type + "\n" +
+      "Ville : " + ville + "\n" +
+      "Quartier : " + quartier + "\n" +
+      "Prix : " + prix + " FCFA\n" +
+      "Mon WhatsApp : " + tel + "\n" +
+      "Description : " + desc + "\n\n" +
+      "Je vous envoie mes photos juste après.";
+
+    var lien = "https://wa.me/" + NUMERO + "?text=" + encodeURIComponent(message);
+    document.getElementById("lienWa").href = lien;
+    form.style.display = "none";
+    document.getElementById("merci").style.display = "block";
+    window.location.href = lien;
+  });
+</script>
+</body>
+</html>

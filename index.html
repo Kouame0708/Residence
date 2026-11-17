@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Ma Résidence</title>
+<title>Ma Résidence – Logements en Côte d’Ivoire</title>
+<meta name="description" content="Trouvez un logement en longue ou courte durée en Côte d’Ivoire et contactez le propriétaire sur WhatsApp.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Figtree:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -19,16 +20,21 @@ main{max-width:640px;margin:auto;padding:12px 18px calc(96px + env(safe-area-ins
 h2.title{font:800 24px/1.15 "Bricolage Grotesque",Figtree,sans-serif;margin:16px 0 8px}
 .page p{margin:8px 0}
 .tools{position:sticky;top:0;background:var(--bg);padding:10px 0;z-index:5}
-input[type=search]{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font:inherit}
+input[type=search],select{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font:inherit}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 .chip{flex:1 1 auto;padding:9px 12px;border:0;border-radius:999px;background:var(--chip);color:var(--ink);font:600 14px Figtree,sans-serif;cursor:pointer}
 .chip[aria-pressed=true]{background:var(--green);color:var(--green-ink)}
+.row{display:flex;gap:10px;align-items:center;margin-top:10px}
+.row select{flex:1}
+#nb{color:var(--mute);font-size:14px;white-space:nowrap}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-top:16px}
 .photo{position:relative;aspect-ratio:4/3;background:var(--chip);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:48px}
 .slides{display:flex;width:100%;height:100%;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .slides::-webkit-scrollbar{display:none}
-.slides img{flex:0 0 100%;width:100%;height:100%;object-fit:cover;display:block;scroll-snap-align:center}
+.slides img{flex:0 0 100%;width:100%;height:100%;object-fit:cover;display:block;scroll-snap-align:center;cursor:zoom-in}
 .count{position:absolute;right:10px;bottom:10px;background:rgba(0,0,0,.6);color:#fff;font:600 13px Figtree,sans-serif;padding:3px 10px;border-radius:999px;pointer-events:none}
+.heart{position:absolute;right:10px;top:10px;width:42px;height:42px;border:0;border-radius:50%;background:rgba(255,255,255,.92);font-size:22px;line-height:1;cursor:pointer;color:#777}
+.heart[aria-pressed=true]{color:#d6293e}
 .body{padding:14px 16px 16px}
 .top{display:flex;justify-content:space-between;align-items:start;gap:10px}
 .place{font:800 19px/1.2 "Bricolage Grotesque",Figtree,sans-serif;margin:0}
@@ -38,19 +44,27 @@ input[type=search]{width:100%;padding:12px 14px;border:1.5px solid var(--line);b
 .desc.open{max-height:none}
 .more{background:none;border:0;color:var(--green);font:600 14px Figtree,sans-serif;padding:6px 0;cursor:pointer}
 .wa{display:block;text-align:center;margin-top:10px;padding:13px;border-radius:12px;background:var(--green);color:var(--green-ink);font-weight:600;text-decoration:none}
+.acts{display:flex;gap:8px;margin-top:8px}
+.sm{flex:1;text-align:center;padding:9px;border:1.5px solid var(--line);border-radius:10px;color:var(--ink);font:600 14px Figtree,sans-serif;text-decoration:none}
 .msg{text-align:center;color:var(--mute);padding:40px 10px}
-.publish[hidden]{display:none}
 .publish{display:block;text-align:center;margin-top:20px;padding:13px;border:2px solid var(--green);border-radius:12px;color:var(--green);font-weight:600;text-decoration:none}
 .steps{margin:12px 0;padding-left:22px}
 .steps li{margin:8px 0}
 .note{background:var(--chip);color:var(--ink);padding:10px 12px;border-radius:12px;font-size:14px;margin:12px 0 0}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:10px}
+summary{font-weight:600;cursor:pointer}
+details p{color:var(--mute);margin:8px 0 0}
+footer{text-align:center;color:var(--mute);font-size:13px;margin-top:30px}
 nav{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
 nav .in{display:flex;max-width:640px;margin:auto}
-.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 4px 8px;border:0;background:none;color:var(--mute);font:600 12px Figtree,sans-serif;cursor:pointer}
-.tab span{font-size:22px;line-height:1}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 2px 8px;border:0;background:none;color:var(--mute);font:600 11px Figtree,sans-serif;cursor:pointer}
+.tab span{font-size:21px;line-height:1}
 .tab[aria-current=page]{color:var(--green)}
 .tab[aria-current=page] span{transform:scale(1.12)}
-.wa:focus-visible,.chip:focus-visible,input:focus-visible,.more:focus-visible,.tab:focus-visible,.publish:focus-visible{outline:3px solid var(--price);outline-offset:2px}
+#lb{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;cursor:zoom-out}
+#lb[hidden]{display:none}
+#lb img{max-width:100%;max-height:100%;object-fit:contain}
+.wa:focus-visible,.chip:focus-visible,input:focus-visible,select:focus-visible,.more:focus-visible,.tab:focus-visible,.publish:focus-visible,.heart:focus-visible,.sm:focus-visible,summary:focus-visible{outline:3px solid var(--price);outline-offset:2px}
 </style>
 </head>
 <body>
@@ -69,9 +83,22 @@ nav .in{display:flex;max-width:640px;margin:auto}
         <button class="chip" data-f="courte" aria-pressed="false">Courte durée</button>
         <button class="chip" data-f="deux" aria-pressed="false">Les 2 durées</button>
       </div>
+      <div class="row">
+        <select id="sort" aria-label="Trier les annonces">
+          <option value="new">Plus récentes</option>
+          <option value="asc">Prix croissant</option>
+          <option value="desc">Prix décroissant</option>
+        </select>
+        <span id="nb"></span>
+      </div>
     </div>
     <p class="note">⚠️ <b>Conseil :</b> ne payez jamais avant d'avoir visité le logement et rencontré le propriétaire.</p>
     <div id="list"><p class="msg">Chargement des annonces…</p></div>
+  </section>
+
+  <section class="page" id="p-favoris" hidden>
+    <h2 class="title">Mes favoris</h2>
+    <div id="favlist"></div>
   </section>
 
   <section class="page" id="p-publier" hidden>
@@ -79,10 +106,10 @@ nav .in{display:flex;max-width:640px;margin:auto}
     <p>Vous êtes propriétaire ? Ajoutez votre logement gratuitement, il apparaîtra dans les annonces.</p>
     <ol class="steps">
       <li>Remplissez le formulaire avec la ville, le quartier, le prix et une description.</li>
-      <li>Ajoutez une photo et votre numéro WhatsApp.</li>
+      <li>Envoyez-le sur WhatsApp, puis envoyez vos photos dans la même conversation.</li>
       <li>Votre annonce est publiée après vérification.</li>
     </ol>
-    <a id="publish" class="publish" hidden target="_blank" rel="noopener">Ouvrir le formulaire</a>
+    <a id="publish" class="publish" href="publier.html">Ouvrir le formulaire</a>
   </section>
 
   <section class="page" id="p-apropos" hidden>
@@ -90,6 +117,12 @@ nav .in{display:flex;max-width:640px;margin:auto}
     <p>Ma Résidence aide chacun à trouver un logement en Côte d’Ivoire, en longue ou en courte durée.</p>
     <p>Les propriétaires publient leurs annonces et les visiteurs les contactent directement sur WhatsApp.</p>
     <p class="note">⚠️ Ne payez jamais avant d'avoir visité le logement et rencontré le propriétaire.</p>
+    <h2 class="title">Questions fréquentes</h2>
+    <details><summary>Est-ce gratuit ?</summary><p>Oui, chercher un logement et publier une annonce sont gratuits.</p></details>
+    <details><summary>Comment contacter un propriétaire ?</summary><p>Appuyez sur « Contacter le propriétaire » sous l’annonce. WhatsApp s’ouvre avec un message prêt à envoyer.</p></details>
+    <details><summary>Comment publier mon logement ?</summary><p>Ouvrez l’onglet Publier, remplissez le formulaire, envoyez-le sur WhatsApp puis envoyez vos photos.</p></details>
+    <details><summary>Pourquoi mon annonce n’apparaît pas tout de suite ?</summary><p>Chaque annonce est vérifiée avant d’être publiée, pour votre sécurité.</p></details>
+    <details><summary>Une annonce me semble suspecte, que faire ?</summary><p>Appuyez sur « Signaler » sous l’annonce. Ne payez jamais avant d’avoir visité.</p></details>
   </section>
 
   <section class="page" id="p-contact" hidden>
@@ -99,11 +132,15 @@ nav .in{display:flex;max-width:640px;margin:auto}
     <p id="contact-none" class="msg" hidden>Le contact sera bientôt disponible.</p>
   </section>
 
+  <footer>© Ma Résidence · Côte d’Ivoire</footer>
 </main>
+
+<div id="lb" hidden><img alt="Photo du logement en grand"></div>
 
 <nav aria-label="Menu principal">
   <div class="in">
     <button class="tab" data-p="annonces" aria-current="page"><span aria-hidden="true">🏠</span>Annonces</button>
+    <button class="tab" data-p="favoris"><span aria-hidden="true">❤️</span>Favoris</button>
     <button class="tab" data-p="publier"><span aria-hidden="true">📝</span>Publier</button>
     <button class="tab" data-p="apropos"><span aria-hidden="true">ℹ️</span>À propos</button>
     <button class="tab" data-p="contact"><span aria-hidden="true">📞</span>Contact</button>
@@ -111,15 +148,13 @@ nav .in{display:flex;max-width:640px;margin:auto}
 </nav>
 
 <script>
-// 1. Lien du tableau Google Sheets (publié en CSV)
 var CSV_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vR4RqnA-YppFCl6-MhX3ZdGUgRhu3JVnLtoBG8sQr8LNxp7HoMuU5CrGKcl0t1pERSxbavvtg28d7gy/pub?output=csv";
-// 2. Lien du formulaire Google Forms
-var FORM_URL="https://docs.google.com/forms/d/1fqYhAG0dVXl36qtgKoze7mFZumZbztDGyY1tpTbZKyk/viewform";
-// 3. Ton numéro WhatsApp pour la page Contact (ex. "0717096945"), à mettre entre les guillemets
-var CONTACT_TEL="";
+// Numéro WhatsApp de contact et des signalements
+var CONTACT_TEL="2250717096945";
 
-var annonces=[],filtre="";
-var $list=document.getElementById("list"),$q=document.getElementById("q");
+var annonces=[],filtre="",tri="new";
+var $list=document.getElementById("list"),$q=document.getElementById("q"),$fav=document.getElementById("favlist");
+var $lb=document.getElementById("lb");
 
 function parseCSV(t){
   var rows=[],row=[],cell="",q=false,i,c;
@@ -138,83 +173,116 @@ function parseCSV(t){
   if(cell!==""||row.length){row.push(cell);rows.push(row);}
   return rows;
 }
+function phone(s){var d=(s||"").replace(/\D/g,"");if(d.length===10&&d[0]==="0")d="225"+d;return d;}
+function photoId(s){var m=(s||"").match(/[-\w]{25,}/);return m?m[0]:"";}
+function photoIds(s){return (s||"").split(",").map(photoId).filter(function(x){return x;});}
+function norm(s){return (s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");}
+function prixNum(p){var m=(p||"").match(/\d[\d\s.]*/);var n=m?parseInt(m[0].replace(/\D/g,""),10):NaN;return isNaN(n)?null:n;}
 
-function phone(s){
-  var d=(s||"").replace(/\D/g,"");
-  if(d.length===10&&d[0]==="0")d="225"+d;
-  return d;
-}
-function photoId(s){
-  var m=(s||"").match(/[-\w]{25,}/);
-  return m?m[0]:"";
-}
-// Plusieurs photos : les liens sont séparés par des virgules
-function photoIds(s){
-  return (s||"").split(",").map(photoId).filter(function(x){return x;});
+// Favoris (enregistrés dans le téléphone)
+function getFavs(){try{return JSON.parse(localStorage.getItem("mr_fav")||"[]");}catch(e){return [];}}
+function setFavs(a){try{localStorage.setItem("mr_fav",JSON.stringify(a));}catch(e){}}
+
+function makeCard(a){
+  var deux=a.type.toLowerCase().indexOf("2 dur")>-1;
+  var card=document.createElement("article");card.className="card";
+
+  var ph=document.createElement("div");ph.className="photo";
+  var ids=photoIds(a.photo);
+  if(ids.length){
+    var sl=document.createElement("div");sl.className="slides";
+    ids.forEach(function(id,i){
+      var img=new Image();
+      img.alt="Photo "+(i+1)+" du logement à "+a.quartier;
+      img.loading="lazy";
+      img.src="https://drive.google.com/thumbnail?id="+id+"&sz=w800";
+      img.onerror=function(){img.style.visibility="hidden";};
+      img.onclick=function(){$lb.firstChild.src="https://drive.google.com/thumbnail?id="+id+"&sz=w1600";$lb.hidden=false;};
+      sl.appendChild(img);
+    });
+    ph.appendChild(sl);
+    if(ids.length>1){
+      var cnt=document.createElement("span");cnt.className="count";cnt.textContent="1 / "+ids.length;
+      sl.addEventListener("scroll",function(){cnt.textContent=(Math.round(sl.scrollLeft/sl.clientWidth)+1)+" / "+ids.length;});
+      ph.appendChild(cnt);
+    }
+  }else ph.textContent="🏠";
+
+  var hb=document.createElement("button");hb.className="heart";hb.textContent="♥";
+  hb.setAttribute("aria-label","Ajouter aux favoris");
+  hb.setAttribute("aria-pressed",getFavs().indexOf(a.id)>-1);
+  hb.onclick=function(){
+    var f=getFavs(),k=f.indexOf(a.id);
+    if(k>-1)f.splice(k,1);else f.push(a.id);
+    setFavs(f);
+    hb.setAttribute("aria-pressed",k<0);
+    if(!document.getElementById("p-favoris").hidden)renderFavs();
+  };
+  ph.appendChild(hb);
+  card.appendChild(ph);
+
+  var b=document.createElement("div");b.className="body";
+  var top=document.createElement("div");top.className="top";
+  var h=document.createElement("h2");h.className="place";h.textContent=a.quartier+", "+a.ville;
+  var t=document.createElement("span");t.className="type";t.textContent=deux?"Courte & longue durée":a.type;
+  top.appendChild(h);top.appendChild(t);b.appendChild(top);
+
+  var p=document.createElement("div");p.className="price";p.textContent=a.prix;b.appendChild(p);
+  var d=document.createElement("p");d.className="desc";d.textContent=a.desc;b.appendChild(d);
+  var m=document.createElement("button");m.className="more";m.textContent="Voir plus";
+  m.onclick=function(){var o=d.classList.toggle("open");m.textContent=o?"Voir moins":"Voir plus";};
+  b.appendChild(m);
+
+  var num=phone(a.tel);
+  if(num){
+    var w=document.createElement("a");w.className="wa";
+    w.href="https://wa.me/"+num+"?text="+encodeURIComponent("Bonjour, je suis intéressé(e) par votre logement à "+a.quartier+" (Ma Résidence).");
+    w.target="_blank";w.rel="noopener";w.textContent="Contacter le propriétaire";
+    b.appendChild(w);
+  }
+
+  var acts=document.createElement("div");acts.className="acts";
+  var sh=document.createElement("a");sh.className="sm";sh.textContent="Partager";
+  sh.href="https://wa.me/?text="+encodeURIComponent("Logement à "+a.quartier+", "+a.ville+" – "+a.prix+"\n"+location.origin+location.pathname);
+  sh.target="_blank";sh.rel="noopener";acts.appendChild(sh);
+  var cn=phone(CONTACT_TEL);
+  if(cn){
+    var sg=document.createElement("a");sg.className="sm";sg.textContent="Signaler";
+    sg.href="https://wa.me/"+cn+"?text="+encodeURIComponent("Je signale l'annonce : "+a.quartier+", "+a.ville+" ("+a.tel+")");
+    sg.target="_blank";sg.rel="noopener";acts.appendChild(sg);
+  }
+  b.appendChild(acts);
+  card.appendChild(b);
+  return card;
 }
 
 function render(){
-  var mot=$q.value.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")
-,n=0;
-  $list.innerHTML="";
+  var mot=norm($q.value.trim()),liste=[];
   annonces.forEach(function(a){
-    var type=a.type.toLowerCase();
-    // Annonce « Les 2 durées » : visible dans Longue durée ET Courte durée
-    var deux=type.indexOf("2 dur")>-1;
-if(filtre==="deux"){if(!deux)return;}else if(filtre&&!deux&&type.indexOf(filtre)!==0)return;
-    if(mot&&(a.ville+" "+a.quartier).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")
-.indexOf(mot)<0)return;
-    n++;
-    var card=document.createElement("article");card.className="card";
-
-    var ph=document.createElement("div");ph.className="photo";
-    var ids=photoIds(a.photo);
-    if(ids.length){
-      var sl=document.createElement("div");sl.className="slides";
-      ids.forEach(function(id,i){
-        var img=new Image();
-        img.alt="Photo "+(i+1)+" du logement à "+a.quartier;
-        img.loading="lazy";
-        img.src="https://drive.google.com/thumbnail?id="+id+"&sz=w800";
-        img.onerror=function(){img.style.visibility="hidden";};
-        sl.appendChild(img);
-      });
-      ph.appendChild(sl);
-      if(ids.length>1){
-        var cnt=document.createElement("span");cnt.className="count";
-        cnt.textContent="1 / "+ids.length;
-        sl.addEventListener("scroll",function(){
-          var k=Math.round(sl.scrollLeft/sl.clientWidth)+1;
-          cnt.textContent=k+" / "+ids.length;
-        });
-        ph.appendChild(cnt);
-      }
-    }else ph.textContent="🏠";
-    card.appendChild(ph);
-
-    var b=document.createElement("div");b.className="body";
-    var top=document.createElement("div");top.className="top";
-    var h=document.createElement("h2");h.className="place";h.textContent=a.quartier+", "+a.ville;
-    var t=document.createElement("span");t.className="type";t.textContent=deux?"Courte & longue durée":a.type;
-    top.appendChild(h);top.appendChild(t);b.appendChild(top);
-
-    var p=document.createElement("div");p.className="price";p.textContent=a.prix;b.appendChild(p);
-
-    var d=document.createElement("p");d.className="desc";d.textContent=a.desc;b.appendChild(d);
-    var m=document.createElement("button");m.className="more";m.textContent="Voir plus";
-    m.onclick=function(){var o=d.classList.toggle("open");m.textContent=o?"Voir moins":"Voir plus";};
-    b.appendChild(m);
-
-    var num=phone(a.tel);
-    if(num){
-      var w=document.createElement("a");w.className="wa";
-      w.href="https://wa.me/"+num+"?text="+encodeURIComponent("Bonjour, je suis intéressé(e) par votre logement à "+a.quartier+" (Ma Résidence).");
-      w.target="_blank";w.rel="noopener";w.textContent="Contacter le propriétaire";
-      b.appendChild(w);
-    }
-    card.appendChild(b);$list.appendChild(card);
+    var type=a.type.toLowerCase(),deux=type.indexOf("2 dur")>-1;
+    if(filtre==="deux"){if(!deux)return;}
+    else if(filtre&&!deux&&type.indexOf(filtre)!==0)return;
+    if(mot&&norm(a.ville+" "+a.quartier).indexOf(mot)<0)return;
+    liste.push(a);
   });
-  if(!n)$list.innerHTML='<p class="msg">Aucune annonce trouvée. Essayez une autre ville ou un autre filtre.</p>';
+  if(tri!=="new"){
+    liste.sort(function(x,y){
+      var px=prixNum(x.prix),py=prixNum(y.prix);
+      if(px===null)return 1;if(py===null)return -1;
+      return tri==="asc"?px-py:py-px;
+    });
+  }
+  $list.innerHTML="";
+  document.getElementById("nb").textContent=liste.length+(liste.length>1?" annonces":" annonce");
+  if(!liste.length){$list.innerHTML='<p class="msg">Aucune annonce trouvée. Essayez une autre ville ou un autre filtre.</p>';return;}
+  liste.forEach(function(a){$list.appendChild(makeCard(a));});
+}
+
+function renderFavs(){
+  var f=getFavs(),liste=annonces.filter(function(a){return f.indexOf(a.id)>-1;});
+  $fav.innerHTML="";
+  if(!liste.length){$fav.innerHTML='<p class="msg">Aucun favori pour le moment. Appuyez sur ♥ sur une annonce pour la retrouver ici.</p>';return;}
+  liste.forEach(function(a){$fav.appendChild(makeCard(a));});
 }
 
 document.getElementById("chips").addEventListener("click",function(e){
@@ -224,20 +292,20 @@ document.getElementById("chips").addEventListener("click",function(e){
   render();
 });
 $q.addEventListener("input",render);
+document.getElementById("sort").addEventListener("change",function(e){tri=e.target.value;render();});
+$lb.addEventListener("click",function(){$lb.hidden=true;});
 
-// Menu du bas
 function go(name){
   document.querySelectorAll(".page").forEach(function(s){s.hidden=s.id!=="p-"+name;});
   document.querySelectorAll(".tab").forEach(function(t){
     if(t.dataset.p===name)t.setAttribute("aria-current","page");else t.removeAttribute("aria-current");
   });
+  if(name==="favoris")renderFavs();
   window.scrollTo(0,0);
 }
 document.querySelector("nav").addEventListener("click",function(e){
   var t=e.target.closest(".tab");if(t)go(t.dataset.p);
 });
-
-if(FORM_URL){var pb=document.getElementById("publish");pb.href=FORM_URL;pb.hidden=false;}
 
 var cnum=phone(CONTACT_TEL);
 if(cnum){
@@ -248,9 +316,10 @@ if(cnum){
 
 fetch(CSV_URL).then(function(r){return r.text();}).then(function(txt){
   var rows=parseCSV(txt);rows.shift();
-  annonces=rows.filter(function(r){return r.length>=8&&r[1]&&(r[8]||"").trim().toLowerCase()==="oui"
-;}).map(function(r){
-    return{ville:r[1].trim(),quartier:r[2].trim(),prix:r[3].trim(),tel:r[4],desc:r[5].trim(),photo:r[6],type:(r[7]||"").trim()};
+  annonces=rows.filter(function(r){return r.length>=8&&r[1]&&(r[8]||"").trim().toLowerCase()==="oui";}).map(function(r){
+    var o={ville:r[1].trim(),quartier:r[2].trim(),prix:r[3].trim(),tel:r[4],desc:r[5].trim(),photo:r[6],type:(r[7]||"").trim()};
+    o.id=phone(o.tel)+"|"+o.quartier+"|"+o.desc.slice(0,20);
+    return o;
   }).reverse();
   render();
 }).catch(function(){
